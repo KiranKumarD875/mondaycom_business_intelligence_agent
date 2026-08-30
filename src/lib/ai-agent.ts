@@ -6,17 +6,14 @@
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
-let _openai: OpenAI | null = null;
+const getOpenAI = () => {
+  return new OpenAI({
+    apiKey: process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY,
+    baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+  });
+};
 
-function getOpenAI(): OpenAI {
-  if (!_openai) {
-    _openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-      baseURL: "https://api.groq.com/openai/v1",
-    });
-  }
-  return _openai;
-}
+const AGENT_MODEL = "gemini-2.0-flash";
 
 export const SYSTEM_PROMPT = `You are an elite Business Intelligence Agent for a professional services firm. You have access to real-time data from Monday.com boards containing:
 
