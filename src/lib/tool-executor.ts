@@ -236,7 +236,7 @@ export async function executeToolCall(
         },
         topSectors,
         topStages,
-        dealsByStatus: Object.entries(metrics.dealsByStatus).map(([status, data]) => ({
+        dealsByStatus: Object.entries(metrics.dealsByStatus).slice(0, 10).map(([status, data]) => ({
           status,
           count: data.count,
           value: formatCurrency(data.value),
@@ -330,6 +330,7 @@ export async function executeToolCall(
         },
         revenueByStatus: Object.entries(revenue.byStatus)
           .sort((a, b) => b[1].billed - a[1].billed)
+          .slice(0, 10)
           .map(([status, data]) => ({
             status,
             count: data.count,
@@ -338,6 +339,7 @@ export async function executeToolCall(
           })),
         revenueBySector: Object.entries(revenue.bySector)
           .sort((a, b) => b[1].billed - a[1].billed)
+          .slice(0, 10)
           .map(([sector, data]) => ({
             sector,
             count: data.count,
@@ -346,29 +348,31 @@ export async function executeToolCall(
           })),
         revenueByWorkType: Object.entries(revenue.byTypeOfWork)
           .sort((a, b) => b[1].billed - a[1].billed)
+          .slice(0, 10)
           .map(([type, data]) => ({
             type,
             count: data.count,
             billed: formatCurrency(data.billed),
             collected: formatCurrency(data.collected),
           })),
-        topCustomers: revenue.topCustomers.map((c) => ({
+        topCustomers: revenue.topCustomers.slice(0, 10).map((c) => ({
           ...c,
           billed: formatCurrency(c.billed),
           collected: formatCurrency(c.collected),
         })),
-        executionStatusBreakdown: Object.entries(ops.byExecutionStatus).map(([status, count]) => ({
+        executionStatusBreakdown: Object.entries(ops.byExecutionStatus).slice(0, 10).map(([status, count]) => ({
           status,
           count,
           percentage: `${((count / ops.totalWorkOrders) * 100).toFixed(1)}%`,
         })),
         sectorBreakdown: Object.entries(ops.bySector)
           .sort((a, b) => b[1] - a[1])
+          .slice(0, 10)
           .map(([sector, count]) => ({
             sector,
             count,
           })),
-        arPriority: Object.entries(ops.arPriorityBreakdown).map(([priority, count]) => ({
+        arPriority: Object.entries(ops.arPriorityBreakdown).slice(0, 10).map(([priority, count]) => ({
           priority,
           count,
         })),
@@ -416,8 +420,8 @@ export async function executeToolCall(
 
       return {
         analysisType: toolArgs.analysis_type,
-        deals: dr,
-        workOrders: wr,
+        dealsSummary: dr.summary,
+        workOrdersSummary: wr.summary,
         crossInsights: {
           pipelineVsRevenue: `Pipeline value: ${(dr.summary as Record<string, string>)?.totalPipelineValue ?? "N/A"} | Actual billed: ${(wr.summary as Record<string, string>)?.totalBilled ?? "N/A"}`,
           conversionToExecution: `${(dr.summary as Record<string, string>)?.conversionRate ?? "N/A"} deal conversion | ${(wr.summary as Record<string, string>)?.completionRate ?? "N/A"} execution completion`,
