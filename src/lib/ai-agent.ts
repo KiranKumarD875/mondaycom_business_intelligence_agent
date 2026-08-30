@@ -13,7 +13,7 @@ const getOpenAI = () => {
   });
 };
 
-const AGENT_MODEL = "gemini-2.0-flash";
+const AGENT_MODEL = "gemini-3.6-flash";
 
 export const SYSTEM_PROMPT = `You are an elite Business Intelligence Agent for a professional services firm. You have access to real-time data from Monday.com boards containing:
 
