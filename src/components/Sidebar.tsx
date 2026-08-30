@@ -303,7 +303,7 @@ function DecisionLogModal({ onClose }: { onClose: () => void }) {
           </Section>
           <Section title="Trade-offs & Decisions">
             <ul className="space-y-2 text-[--text-muted]">
-              <li className="flex gap-2"><span className="text-indigo-400 flex-shrink-0">▸</span> <strong className="text-white">GPT-4o via tool calling</strong> — Best reasoning for messy data interpretation over smaller models. Trade-off: higher cost, but founder-level BI requires accuracy.</li>
+              <li className="flex gap-2"><span className="text-indigo-400 flex-shrink-0">▸</span> <strong className="text-white">Groq API via tool calling</strong> — High-speed inference using open-weights models. Trade-off: free tier limits context window size, but it is lightning fast for BI data analysis and perfectly cost-effective.</li>
               <li className="flex gap-2"><span className="text-indigo-400 flex-shrink-0">▸</span> <strong className="text-white">5-min board cache</strong> — Reduces API calls while keeping data fresh. Trade-off: slight staleness vs. Monday.com rate limits.</li>
               <li className="flex gap-2"><span className="text-indigo-400 flex-shrink-0">▸</span> <strong className="text-white">Server-side analytics</strong> — All computation happens server-side to keep Monday.com tokens secure.</li>
               <li className="flex gap-2"><span className="text-indigo-400 flex-shrink-0">▸</span> <strong className="text-white">Read-only API</strong> — Strictly no mutations to Monday.com data as specified.</li>
