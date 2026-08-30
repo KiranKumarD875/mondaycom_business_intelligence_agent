@@ -19,21 +19,20 @@ interface DashboardData {
   deals: {
     summary: {
       totalDeals: number;
-      totalValue: number;
-      wonValue: number;
-      winRate: number;
-      averageDealSize: number;
+      totalPipelineValue: string;
+      wonDeals: string;
+      conversionRate: string;
     };
-    raw: any[];
+    topSectors: Array<{ sector: string; dealCount: number; totalValue: string }>;
   };
   workOrders: {
     summary: {
-      totalOrders: number;
-      totalBilled: number;
-      totalCollected: number;
-      activeOrders: number;
+      totalWorkOrders: number;
+      totalBilled: string;
+      totalCollected: string;
+      completionRate: string;
     };
-    raw: any[];
+    executionStatusBreakdown: Array<{ status: string; count: number; percentage: string }>;
   };
 }
 
@@ -78,23 +77,19 @@ export default function DashboardView() {
   }
 
   // Transform data for charts
-  const sectorDataMap: Record<string, number> = {};
-  data.deals.raw.forEach((deal) => {
-    if (deal.Sector && deal["Deal Value"]) {
-      sectorDataMap[deal.Sector] = (sectorDataMap[deal.Sector] || 0) + parseFloat(deal["Deal Value"]);
-    }
-  });
-  const sectorChartData = Object.entries(sectorDataMap)
-    .map(([name, value]) => ({ name, value }))
-    .sort((a, b) => b.value - a.value);
+  const parseCurrencyStr = (str: string) => {
+    return Number(str.replace(/[^0-9.-]+/g, ""));
+  };
 
-  const statusDataMap: Record<string, number> = {};
-  data.workOrders.raw.forEach((wo) => {
-    if (wo.Status) {
-      statusDataMap[wo.Status] = (statusDataMap[wo.Status] || 0) + 1;
-    }
-  });
-  const statusChartData = Object.entries(statusDataMap).map(([name, value]) => ({ name, value }));
+  const sectorChartData = (data.deals.topSectors || []).map((s) => ({
+    name: s.sector,
+    value: parseCurrencyStr(s.totalValue),
+  }));
+
+  const statusChartData = (data.workOrders.executionStatusBreakdown || []).map((s) => ({
+    name: s.status,
+    value: s.count,
+  }));
 
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(val);
@@ -116,28 +111,28 @@ export default function DashboardView() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <KpiCard
             title="Total Pipeline"
-            value={formatCurrency(data.deals.summary.totalValue)}
+            value={data.deals.summary.totalPipelineValue}
             icon={<TrendingUp size={20} />}
             color="text-indigo-400"
             bg="bg-indigo-500/10"
           />
           <KpiCard
             title="Revenue Billed"
-            value={formatCurrency(data.workOrders.summary.totalBilled)}
+            value={data.workOrders.summary.totalBilled}
             icon={<DollarSign size={20} />}
             color="text-emerald-400"
             bg="bg-emerald-500/10"
           />
           <KpiCard
-            title="Win Rate"
-            value={`${Math.round(data.deals.summary.winRate)}%`}
+            title="Conversion Rate"
+            value={data.deals.summary.conversionRate}
             icon={<Activity size={20} />}
             color="text-amber-400"
             bg="bg-amber-500/10"
           />
           <KpiCard
-            title="Active Work Orders"
-            value={data.workOrders.summary.activeOrders.toString()}
+            title="Total Work Orders"
+            value={data.workOrders.summary.totalWorkOrders.toString()}
             icon={<LayoutDashboard size={20} />}
             color="text-violet-400"
             bg="bg-violet-500/10"
