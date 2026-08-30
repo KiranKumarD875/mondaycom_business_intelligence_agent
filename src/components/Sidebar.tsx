@@ -108,8 +108,8 @@ export default function Sidebar({
         {!collapsed && (
           <div className="px-3 mb-2">
             <div className="space-y-0.5">
-              <NavItem icon={<LayoutDashboard size={14} />} label="Dashboard" active={false} />
-              <NavItem icon={<Database size={14} />} label="Data Sources" active={false} />
+              <NavItem icon={<LayoutDashboard size={14} />} label="Dashboard" active={false} onClick={() => alert("Visual dashboard view is coming soon! The current version focuses on the AI Chat BI Agent.")} />
+              <NavItem icon={<Database size={14} />} label="Data Sources" active={false} onClick={() => alert("Data Sources configuration is coming soon! Monday.com boards are currently auto-detected.")} />
             </div>
           </div>
         )}
@@ -198,13 +198,16 @@ function NavItem({
   icon,
   label,
   active,
+  onClick,
 }: {
   icon: React.ReactNode;
   label: string;
   active: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button
+      onClick={onClick}
       className={cn(
         "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors text-xs",
         active

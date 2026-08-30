@@ -246,21 +246,32 @@ export async function runAgent(
 
       toolsUsed.push(toolName);
 
-      let toolResult: unknown;
+      let llmToolResult: Record<string, unknown> = {};
       try {
         toolResult = await toolExecutor(toolName, toolArgs);
         
         // Extract metadata for UI rendering
         if (
           toolResult &&
-          typeof toolResult === "object" &&
-          "metadata" in (toolResult as object)
+          typeof toolResult === "object"
         ) {
-          const tr = toolResult as { metadata?: AgentResponse["metadata"] };
-          lastMetadata = tr.metadata;
+          llmToolResult = { ...(toolResult as Record<string, unknown>) };
+          if ("metadata" in llmToolResult) {
+            const tr = toolResult as { metadata?: AgentResponse["metadata"] };
+            lastMetadata = tr.metadata;
+            delete llmToolResult.metadata; // Strip metadata to avoid Groq 8k token limit
+          }
+          
+          // Clean nested metadata in cross-board analysis
+          if (llmToolResult.deals && (llmToolResult.deals as Record<string, unknown>).metadata) {
+            delete (llmToolResult.deals as Record<string, unknown>).metadata;
+          }
+          if (llmToolResult.workOrders && (llmToolResult.workOrders as Record<string, unknown>).metadata) {
+            delete (llmToolResult.workOrders as Record<string, unknown>).metadata;
+          }
         }
       } catch (error) {
-        toolResult = {
+        llmToolResult = {
           error: error instanceof Error ? error.message : String(error),
           message: "Tool execution failed - providing best available response",
         };
@@ -269,7 +280,7 @@ export async function runAgent(
       messages.push({
         role: "tool",
         tool_call_id: tc.id,
-        content: JSON.stringify(toolResult),
+        content: JSON.stringify(llmToolResult),
       });
     }
   }
