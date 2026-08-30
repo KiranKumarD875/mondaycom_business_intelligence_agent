@@ -10,6 +10,8 @@ import BoardStatus from "./BoardStatus";
 import { BarChart3, ChevronRight, Settings } from "lucide-react";
 import ConfigModal from "./ConfigModal";
 import SetupGuide from "./SetupGuide";
+import DashboardView from "./DashboardView";
+import DataSourcesView from "./DataSourcesView";
 
 interface Session {
   id: number;
@@ -52,6 +54,7 @@ export default function ChatInterface() {
   const [hasOpenAI, setHasOpenAI] = useState(false);
   const [hasMonday, setHasMonday] = useState(false);
   const [showSetup, setShowSetup] = useState(false);
+  const [activeView, setActiveView] = useState<"chat" | "dashboard" | "data_sources">("chat");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -245,6 +248,8 @@ export default function ChatInterface() {
         onDeleteSession={handleDeleteSession}
         boardsConnected={boardsConnected}
         isConnected={isConnected}
+        activeView={activeView}
+        setActiveView={setActiveView}
       />
 
       {/* Main chat area */}
@@ -291,7 +296,10 @@ export default function ChatInterface() {
         </header>
 
         {/* Content area */}
-        <div className="flex-1 flex overflow-hidden">
+        {activeView === "dashboard" && <DashboardView />}
+        {activeView === "data_sources" && <DataSourcesView />}
+        {activeView === "chat" && (
+          <div className="flex-1 flex overflow-hidden">
           {/* Chat column */}
           <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
             {/* Messages */}
@@ -347,6 +355,7 @@ export default function ChatInterface() {
             </aside>
           )}
         </div>
+        )}
       </main>
     </div>
   );

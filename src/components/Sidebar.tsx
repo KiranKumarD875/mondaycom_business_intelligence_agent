@@ -31,6 +31,8 @@ interface SidebarProps {
   onDeleteSession: (sessionId: string) => void;
   boardsConnected: number;
   isConnected: boolean;
+  activeView: "chat" | "dashboard" | "data_sources";
+  setActiveView: (view: "chat" | "dashboard" | "data_sources") => void;
 }
 
 export default function Sidebar({
@@ -41,6 +43,8 @@ export default function Sidebar({
   onDeleteSession,
   boardsConnected,
   isConnected,
+  activeView,
+  setActiveView,
 }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [showDecisionLog, setShowDecisionLog] = useState(false);
@@ -108,8 +112,8 @@ export default function Sidebar({
         {!collapsed && (
           <div className="px-3 mb-2">
             <div className="space-y-0.5">
-              <NavItem icon={<LayoutDashboard size={14} />} label="Dashboard" active={false} onClick={() => alert("Visual dashboard view is coming soon! The current version focuses on the AI Chat BI Agent.")} />
-              <NavItem icon={<Database size={14} />} label="Data Sources" active={false} onClick={() => alert("Data Sources configuration is coming soon! Monday.com boards are currently auto-detected.")} />
+              <NavItem icon={<LayoutDashboard size={14} />} label="Dashboard" active={activeView === "dashboard"} onClick={() => setActiveView("dashboard")} />
+              <NavItem icon={<Database size={14} />} label="Data Sources" active={activeView === "data_sources"} onClick={() => setActiveView("data_sources")} />
             </div>
           </div>
         )}
