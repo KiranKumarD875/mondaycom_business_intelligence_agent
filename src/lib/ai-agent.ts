@@ -248,7 +248,7 @@ export async function runAgent(
 
       let llmToolResult: Record<string, unknown> = {};
       try {
-        toolResult = await toolExecutor(toolName, toolArgs);
+        const toolResult = await toolExecutor(toolName, toolArgs);
         
         // Extract metadata for UI rendering
         if (
