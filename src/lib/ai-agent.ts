@@ -217,7 +217,7 @@ export async function runAgent(
   // Agentic loop - allow up to 5 tool calls
   for (let iteration = 0; iteration < 5; iteration++) {
     const response = await getOpenAI().chat.completions.create({
-      model: "llama-3.1-70b-versatile",
+      model: "openai/gpt-oss-120b",
       messages,
       tools: AGENT_TOOLS,
       tool_choice: "auto",
@@ -276,7 +276,7 @@ export async function runAgent(
 
   // Fallback if we exceed iterations
   const finalResponse = await getOpenAI().chat.completions.create({
-    model: "llama-3.1-70b-versatile",
+    model: "openai/gpt-oss-120b",
     messages,
     temperature: 0.3,
     max_tokens: 4096,
